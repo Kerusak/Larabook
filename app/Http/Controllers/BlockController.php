@@ -6,7 +6,7 @@ use App\Block;
 use App\Topic;
 use Illuminate\Http\Request;
 
-class TopicController extends Controller
+class BlockController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,13 +15,7 @@ class TopicController extends Controller
      */
     public function index()
     {
-        $topics = Topic::all();
-        $id = 0;
-        return view('topic.index', [
-           'page' => 'Home',
-           'topics' => $topics,
-           'id'=> $id,
-        ]);
+        //
     }
 
     /**
@@ -31,8 +25,13 @@ class TopicController extends Controller
      */
     public function create()
     {
-        $topic = new Topic();
-        return view('topic.create', ['topic'=>$topic, 'page'=>'Add Topic']);
+        $block = new Block();
+        $topics = Topic::pluck('topicname', 'id');
+        return view('block.create', [
+            'block'=>$block,
+            'topics'=>$topics,
+            'page'=>'Forms',
+        ]);
     }
 
     /**
@@ -43,13 +42,24 @@ class TopicController extends Controller
      */
     public function store(Request $request)
     {
-        $topic = new Topic();
-        $topic->topicname = $request->topicname;
-        if (!$topic->save()){
-            $err = $topic->getErrors();
-            return redirect()->action('TopicController@create')->withErrors($err)->withInput();
+        $block = new Block();
+        $fname = $request->file('imagepath');
+        if ($fname != null) {
+            $originalname = $request->file('imagepath')->getClientOriginalName();
+            $request->file('imagepath')->move(public_path().'/images', $originalname);
+            $block->image_path = '/images/'.$originalname;
         }
-        return redirect()->action('BlockController@create');
+        else {
+            $block->image_path = '';
+        }
+        $block->topic_id = $request->topic_id;
+        $block->title = $request->title;
+        $block->content = $request->content;
+        if (!$block->save()){
+            $err = $block->getErrors();
+            return redirect()->action('BlockController@create')->withErrors($err)->withInput();
+        }
+        return redirect()->action('BlockController@create')->with('message', "New topic $block->topicname has been added with id = $block->id");
     }
 
     /**
@@ -60,14 +70,7 @@ class TopicController extends Controller
      */
     public function show($id)
     {
-        $blocks = Block::where('topic_id', '=', $id)->get();
-        $topics = Topic::all();
-        return view('topic.index', [
-            'page' => 'Home',
-            'topics'=>$topics,
-            'blocks'=>$blocks,
-            'id'=>$id,
-        ]);
+        //
     }
 
     /**

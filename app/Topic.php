@@ -2,6 +2,8 @@
 
 namespace App;
 
+//use Esensi\Model\Model;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Topic extends Model
@@ -11,4 +13,7 @@ class Topic extends Model
     protected $fillable = [
         'topicname', 'created_at', 'updated_at',
     ];
+//    protected $rules = [
+//        'topicname'=>['required', 'max:100', 'unique'],
+//    ];
 }

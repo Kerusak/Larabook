@@ -16,6 +16,7 @@ Route::get('/', function () {
 });
 
 Route::resource('topic', 'TopicController');
+Route::resource('block', 'BlockController');
 //   /topic    index     topic.index
 //   /topic/create    create     topic.create
 
